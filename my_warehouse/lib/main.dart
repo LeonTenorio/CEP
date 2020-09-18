@@ -1,6 +1,9 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:my_warehouse/functions/Color.dart';
 import 'package:my_warehouse/screens/NavigationMenu.dart';
+
+final Color laranja = HexColor.fromHex("#CA5C2F");
 
 void main() {
   runApp(MyApp());

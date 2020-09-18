@@ -17,11 +17,21 @@ Os tipos de ingredientes ficaram salvos assim
 
 Future<Map<String, TipoIngrediente>> getTiposIngredientes() async{
   Map<String, dynamic> reload = await getDocument(docName: nomeArquivoTiposIngredientes);
-  Map<String, TipoIngrediente> ret = new Map<String, dynamic>();
+  Map<String, TipoIngrediente> ret = new Map<String, TipoIngrediente>();
 
   List<String> tipos = reload.keys.toList();
   for(int i=0;i<tipos.length;i++){
     ret[tipos[i]] = TipoIngrediente.fromJson(reload[tipos[i]]);
+  }
+  return ret;
+}
+
+Future<List<Ingrediente>> getIngredientes() async{
+  Map<String, dynamic> load = await getTiposIngredientes();
+  List<Ingrediente> ret = new List<Ingrediente>();
+  List<String> keys = load.keys.toList();
+  for(int i=0;i<keys.length;i++){
+    ret.addAll(load[keys[i]]);
   }
   return ret;
 }
@@ -81,7 +91,7 @@ Future<Map<String, dynamic>> getIngredientesUsados() async{
   return ret;
 }
 
-Future<List<Ingrediente>> removerIngredienteEstoque({Ingrediente ingrediente}) async{
+Future<void> removerIngredienteEstoque({Ingrediente ingrediente}) async{
   Map<String, dynamic> reload = await getDocument(docName: nomeArquivoIngredientesEstoque);
   reload[ingrediente.nome].remove(ingrediente.id);
   await saveDocument(docName: nomeArquivoIngredientesEstoque, map: reload);

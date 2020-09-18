@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:my_warehouse/functions/Color.dart';
-import 'package:my_warehouse/screens/CozinharScreen.dart';
+import 'package:my_warehouse/screens/Cozinhar.dart';
+import 'package:my_warehouse/screens/Estoque.dart';
 import 'package:my_warehouse/screens/None.dart';
 
 final Color laranja = HexColor.fromHex("#CA5C2F");
@@ -51,8 +52,8 @@ class _NavigationMenuState extends State<NavigationMenu> {
     ];
 
     _widgetOptions = <Widget>[
-      CozinharScreen(),
-      NonePage(),
+      Cozinhar(),
+      Estoque(),
       NonePage()
     ];
     return Scaffold(
