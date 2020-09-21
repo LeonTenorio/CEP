@@ -15,6 +15,28 @@ Os tipos de ingredientes ficaram salvos assim
 }
 */
 
+/*getIngredientesEstoque - retorna os ingredientes estruturados em Map<String, dynamic> estruturado de ingredientes
+{
+  "SAL":{
+    "DATAINGREDIENTE1": classe INGREDIENTE,
+    "DATAINGREDIENTE2": class INGREDIENTE,
+    ...
+  },
+  "OLEO":{
+    "DATAINGREDIENTE3": classe INGREDIENTE,
+    "DATAINGREDIENTE4": class INGREDIENTE,
+    ...
+  },
+  ...
+}
+*/
+
+//getListTiposIngredientes - retorna a listagem de tipos de ingredientes
+//getTiposIngredientes - retorna o mapa de tipos de ingredientes
+//addIngredienteEstoque - adiciona o ingrediente no estoque
+//removerIngredienteEstoque - remove o ingrediente do estoque para LIXO (deleta mesmo)
+//consumirIngrediente - consome o ingrediente do estoque e joga ele para o local de ingredientes usados, a quantidade que precisa deles, alem de retornar a lista de ingredientes usados nesse processo (sei la por que criterio tah isso, acho que por ordem que os ingredientes sao inseridos do mais antigo para o mais novo
+
 Future<Map<String, TipoIngrediente>> getTiposIngredientes() async{
   Map<String, dynamic> reload = await getDocument(docName: nomeArquivoTiposIngredientes);
   Map<String, TipoIngrediente> ret = new Map<String, TipoIngrediente>();
@@ -26,7 +48,7 @@ Future<Map<String, TipoIngrediente>> getTiposIngredientes() async{
   return ret;
 }
 
-Future<List<Ingrediente>> getIngredientes() async{
+Future<List<Ingrediente>> getListTiposIngredientes() async{
   Map<String, dynamic> load = await getTiposIngredientes();
   List<Ingrediente> ret = new List<Ingrediente>();
   List<String> keys = load.keys.toList();
@@ -36,7 +58,7 @@ Future<List<Ingrediente>> getIngredientes() async{
   return ret;
 }
 
-Future<void> addTipoIngrediente({TipoIngrediente tipoIngrediente}) async{
+Future<void> _addTipoIngrediente({TipoIngrediente tipoIngrediente}) async{
   Map<String, dynamic> tipos = await getTiposIngredientes();
   if(!tipos.containsKey(tipoIngrediente.nome)){
     tipos[tipoIngrediente.nome] = tipoIngrediente.toJson();
@@ -54,6 +76,16 @@ Os ingredientes ficaram salvos assim
   ...
 }
 */
+
+Future<void> addIngredienteEstoque({Ingrediente ingrediente}) async{
+  Map<String, dynamic> reload = await getDocument(docName: nomeArquivoIngredientesEstoque);
+  if(!reload.containsKey(ingrediente.nome)){
+    reload = new Map<String, dynamic>();
+    await _addTipoIngrediente(tipoIngrediente: TipoIngrediente(nome: ingrediente.nome, ehPeso: ingrediente.ehPeso, ehVolume: ingrediente.ehVolume));
+  }
+  reload[ingrediente.nome][ingrediente.id] = ingrediente.toJson();
+  await saveDocument(docName: nomeArquivoIngredientesEstoque, map: reload);
+}
 
 Future<Map<String, dynamic>> getIngredientesEstoque() async{
   Map<String, dynamic> reload = await getDocument(docName: nomeArquivoIngredientesEstoque);
@@ -113,7 +145,7 @@ Future<List<Ingrediente>> consumirIngrediente({String tipo, double peso, double 
     Ingrediente ingrediente = Ingrediente.fromJson(estoque[tipo][datasProdutos[i]]);
     if(!usados.containsKey(ingrediente.nome))
       usados[ingrediente.nome] = new Map<String, dynamic>();
-    if(ingrediente.peso){
+    if(ingrediente.ehPeso){
       if(peso==null){
         throw("Métrica para tirar do estoque é diferente da métrica passada");
       }
@@ -127,7 +159,7 @@ Future<List<Ingrediente>> consumirIngrediente({String tipo, double peso, double 
       }
       soma = soma + ingrediente.pesoIngrediente;
     }
-    else if(ingrediente.volume){
+    else if(ingrediente.ehVolume){
       if(volume==null){
         throw("Métrica para tirar do estoque é diferente da métrica passada");
       }

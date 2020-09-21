@@ -125,7 +125,7 @@ class _AdicionarIngredienteState extends State<AdicionarIngrediente> {
   }
 
   load() async{
-    this.ingredientes = await getIngredientes();
+    this.ingredientes = await getListTiposIngredientes();
     setState(() {
       this.isLoading = false;
     });

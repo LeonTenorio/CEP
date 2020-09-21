@@ -6,28 +6,28 @@
 
 class TipoIngrediente {
   String nome;
-  bool peso;
+  bool ehPeso;
   double pesoComum;
-  bool volume;
+  bool ehVolume;
   int volumeComum;
 
   TipoIngrediente(
-      {this.nome, this.peso, this.pesoComum, this.volume, this.volumeComum});
+      {this.nome, this.ehPeso, this.pesoComum, this.ehVolume, this.volumeComum});
 
   TipoIngrediente.fromJson(Map<String, dynamic> json) {
     nome = json['nome'];
-    peso = json['peso'];
+    ehPeso = json['eh_peso'];
     pesoComum = json['peso_comum'];
-    volume = json['volume'];
+    ehVolume = json['eh_volume'];
     volumeComum = json['volume_comum'];
   }
 
   Map<String, dynamic> toJson() {
     final Map<String, dynamic> data = new Map<String, dynamic>();
     data['nome'] = this.nome;
-    data['peso'] = this.peso;
+    data['eh_peso'] = this.ehPeso;
     data['peso_comum'] = this.pesoComum;
-    data['volume'] = this.volume;
+    data['eh_volume'] = this.ehVolume;
     data['volume_comum'] = this.volumeComum;
     return data;
   }
@@ -36,9 +36,9 @@ class TipoIngrediente {
 class Ingrediente {
   String id;
   String nome;
-  bool peso;
+  bool ehPeso;
   double pesoIngrediente;
-  bool volume;
+  bool ehVolume;
   double volumeIngrediente;
   double preco;
   String horarioAdicionado;
@@ -48,9 +48,9 @@ class Ingrediente {
 
   Ingrediente(
       {this.nome,
-        this.peso,
+        this.ehPeso,
         this.pesoIngrediente,
-        this.volume,
+        this.ehVolume,
         this.volumeIngrediente,
         this.preco,
         this.horarioAdicionado,
@@ -63,9 +63,9 @@ class Ingrediente {
   Ingrediente.fromJson(Map<String, dynamic> json) {
     id = json['id'];
     nome = json['nome'];
-    peso = json['peso'];
+    ehPeso = json['eh_peso'];
     pesoIngrediente = json['peso_ingrediente'];
-    volume = json['volume'];
+    ehVolume = json['eh_volume'];
     volumeIngrediente = json['volume_ingrediente'];
     preco = json['preco'];
     horarioAdicionado = json['horario_adicionado'];
@@ -78,9 +78,9 @@ class Ingrediente {
     final Map<String, dynamic> data = new Map<String, dynamic>();
     data['id'] = this.id;
     data['nome'] = this.nome;
-    data['peso'] = this.peso;
+    data['eh_peso'] = this.ehPeso;
     data['peso_ingrediente'] = this.pesoIngrediente;
-    data['volume'] = this.volume;
+    data['eh_volume'] = this.ehVolume;
     data['volume_ingrediente'] = this.volumeIngrediente;
     data['preco'] = this.preco;
     data['horario_adicionado'] = this.horarioAdicionado;
