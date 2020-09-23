@@ -59,8 +59,6 @@ Future<List<Ingrediente>> getListTiposIngredientes() async{
 }
 
 Future<void> _addTipoIngrediente({TipoIngrediente tipoIngrediente}) async{
-  print("aqui ");
-  print(tipoIngrediente.toJson());
   Map<String, dynamic> tipos = await getDocument(docName: nomeArquivoTiposIngredientes);
   if(!tipos.containsKey(tipoIngrediente.nome)){
     tipos[tipoIngrediente.nome] = tipoIngrediente.toJson();

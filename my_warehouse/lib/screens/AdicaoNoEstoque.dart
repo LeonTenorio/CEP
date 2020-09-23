@@ -2,11 +2,10 @@ import 'package:flutter/material.dart';
 
 import '../functions/Ingredientes.dart';
 import '../models/Ingredientes.dart';
-import '../models/Ingredientes.dart';
-import '../models/Ingredientes.dart';
-import '../models/Ingredientes.dart';
 
 class AdicaoNoEstoque extends StatefulWidget{
+  Map<String, dynamic> estoque;
+  AdicaoNoEstoque({this.estoque});
   @override
   _AdicaoNoEstoqueState createState() => _AdicaoNoEstoqueState();
 }
@@ -90,7 +89,7 @@ class _AdicaoNoEstoqueState extends State<AdicaoNoEstoque> {
                                 )
                               ),
                               DropdownButton(
-                                items: <String>['g','ml'].map((String value){
+                                items: <String>['kg', 'g', 'l', 'ml'].map((String value){
                                   return new DropdownMenuItem(
                                     value:value,
                                     child: new Text(value)
@@ -99,7 +98,7 @@ class _AdicaoNoEstoqueState extends State<AdicaoNoEstoque> {
                                 onChanged: (String data){
                                   setState(() {
                                     kgL = data;
-                                    
+                                    print(kgL);
                                   });
                                 },
                                 value: kgL
@@ -168,15 +167,28 @@ class _AdicaoNoEstoqueState extends State<AdicaoNoEstoque> {
                   child: Text("Adicionar ingrediente"),
                   onPressed: () async{
                     Ingrediente ingrediente;
-                    if(kgL == "g"){
-                      ingrediente = new Ingrediente(nome: nomeController.text, ehPeso: true, pesoIngrediente: double.parse(qtdController.text), ehVolume: false, volumeIngrediente: 0, preco: double.parse(precoController.text),horarioAdicionado: DateTime.now().toString(), horarioUsado: DateTime.now().toString(), validade: dateTime.toString(), marca: marcaController.text);
-                    }else{
-                      ingrediente = new Ingrediente(nome: nomeController.text, ehPeso: false, pesoIngrediente: 0, ehVolume: true, volumeIngrediente: double.parse(qtdController.text), preco: double.parse(precoController.text),horarioAdicionado: DateTime.now().toString(), horarioUsado: DateTime.now().toString(), validade: dateTime.toString(), marca: marcaController.text);
+                    double preco = double.parse(precoController.text.replaceAll(",", "."));
+                    if(kgL == 'kg'){
+                      ingrediente = new Ingrediente(nome: nomeController.text, ehPeso: true, ehVolume: false, pesoIngrediente: double.parse(qtdController.text)*1000, preco: preco,horarioAdicionado: DateTime.now().toString(), validade: dateTime.toString(), marca: marcaController.text);
                     }
-                    await addIngredienteEstoque(ingrediente);
-                    print("entrou");
-                    Map<String, dynamic> estoque = await getIngredientesEstoque();
-                    print(estoque.keys.toList());
+                    if(kgL == "g"){
+                      ingrediente = new Ingrediente(nome: nomeController.text, ehPeso: true, ehVolume: false, pesoIngrediente: double.parse(qtdController.text), preco: preco,horarioAdicionado: DateTime.now().toString(), validade: dateTime.toString(), marca: marcaController.text);
+                    }
+                    else if(kgL == 'l'){
+                      ingrediente = new Ingrediente(nome: nomeController.text, ehPeso: false, ehVolume: true, volumeIngrediente: 1000*double.parse(qtdController.text), preco: preco,horarioAdicionado: DateTime.now().toString(), validade: dateTime.toString(), marca: marcaController.text);
+                    }
+                    else{
+                      ingrediente = new Ingrediente(nome: nomeController.text, ehPeso: false, ehVolume: true, volumeIngrediente: double.parse(qtdController.text), preco: preco,horarioAdicionado: DateTime.now().toString(), validade: dateTime.toString(), marca: marcaController.text);
+                    }
+                    print(ingrediente.toJson());
+                    //Trecho para parecer que as coisas foram instantaneas
+                    if(!this.widget.estoque.containsKey(ingrediente.nome)){
+                      this.widget.estoque[ingrediente.nome] = new Map<String, dynamic>();
+                    }
+                    this.widget.estoque[ingrediente.nome][ingrediente.id] = ingrediente;
+                    //Trecho assincrono
+                    addIngredienteEstoque(ingrediente);
+                    Navigator.pop(context);
                   },
                 ),
               ),
