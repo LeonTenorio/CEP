@@ -59,7 +59,7 @@ Future<List<Ingrediente>> getListTiposIngredientes() async{
 }
 
 Future<void> _addTipoIngrediente({TipoIngrediente tipoIngrediente}) async{
-  Map<String, dynamic> tipos = await getTiposIngredientes();
+  Map<String, dynamic> tipos = await getDocument(docName: nomeArquivoTiposIngredientes);
   if(!tipos.containsKey(tipoIngrediente.nome)){
     tipos[tipoIngrediente.nome] = tipoIngrediente.toJson();
     await saveDocument(docName: nomeArquivoTiposIngredientes, map: tipos);
@@ -77,10 +77,10 @@ Os ingredientes ficaram salvos assim
 }
 */
 
-Future<void> addIngredienteEstoque({Ingrediente ingrediente}) async{
+Future<void> addIngredienteEstoque(Ingrediente ingrediente) async{
   Map<String, dynamic> reload = await getDocument(docName: nomeArquivoIngredientesEstoque);
   if(!reload.containsKey(ingrediente.nome)){
-    reload = new Map<String, dynamic>();
+    reload[ingrediente.nome] = new Map<String, dynamic>();
     await _addTipoIngrediente(tipoIngrediente: TipoIngrediente(nome: ingrediente.nome, ehPeso: ingrediente.ehPeso, ehVolume: ingrediente.ehVolume));
   }
   reload[ingrediente.nome][ingrediente.id] = ingrediente.toJson();
