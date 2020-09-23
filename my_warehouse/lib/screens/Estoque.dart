@@ -2,7 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:my_warehouse/functions/Ingredientes.dart';
 import 'package:my_warehouse/screens/AdicaoNoEstoque.dart';
 import 'package:my_warehouse/widgets/loadingWidget.dart';
+import '../functions/Ingredientes.dart';
 import '../main.dart';
+import '../models/Ingredientes.dart';
 
 class Estoque extends StatefulWidget {
   @override
@@ -64,7 +66,7 @@ class _EstoqueState extends State<Estoque> {
                           padding: EdgeInsets.all(0.5),
                           color: Colors.green,
                           onPressed: () async{
-                            await Navigator.push(context, MaterialPageRoute(builder: (context) => AdicaoNoEstoque(estoque: this.estoque,)));
+                            await Navigator.push(context, MaterialPageRoute(builder: (context) => AdicaoNoEstoque()));
                             setState(() {
 
                             });
@@ -83,18 +85,15 @@ class _EstoqueState extends State<Estoque> {
                       children: [
                         Text("Veja seu estoque", style: TextStyle(fontSize: 16.0), textAlign: TextAlign.center,),
                         SizedBox(height: 10.0,),
-                        ListView.builder(
-                          shrinkWrap: true,
-                          physics: NeverScrollableScrollPhysics(),
-                          itemCount: 10,
-                          itemBuilder: (BuildContext context, int index){
-                            return Container(
-                              height: 50.0,
-                              child: Center(
-                                child: Text(index.toString(), style: TextStyle(fontSize: 18.0),),
-                              ),
-                            );
-                          },
+                        FutureBuilder(
+                          future: getListTiposIngredientes(),
+                          builder: (BuildContext context, AsyncSnapshot snapshot){
+                            if(snapshot.hasData){
+                              return Text("${snapshot.data}");
+                            }else{
+                              return Text("Carregando");
+                            }
+                          }
                         )
                       ],
                     ),

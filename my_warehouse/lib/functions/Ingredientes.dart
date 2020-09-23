@@ -77,7 +77,7 @@ Os ingredientes ficaram salvos assim
 }
 */
 
-Future<void> addIngredienteEstoque({Ingrediente ingrediente}) async{
+Future<void> addIngredienteEstoque(Ingrediente ingrediente) async{
   Map<String, dynamic> reload = await getDocument(docName: nomeArquivoIngredientesEstoque);
   if(!reload.containsKey(ingrediente.nome)){
     reload = new Map<String, dynamic>();
