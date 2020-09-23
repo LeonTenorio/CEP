@@ -90,7 +90,7 @@ class _AdicaoNoEstoqueState extends State<AdicaoNoEstoque> {
                                 )
                               ),
                               DropdownButton(
-                                items: <String>['Kg','L'].map((String value){
+                                items: <String>['g','ml'].map((String value){
                                   return new DropdownMenuItem(
                                     value:value,
                                     child: new Text(value)
@@ -166,15 +166,17 @@ class _AdicaoNoEstoqueState extends State<AdicaoNoEstoque> {
                 margin: EdgeInsets.only(bottom:10.0),
                 child: RaisedButton(
                   child: Text("Adicionar ingrediente"),
-                  onPressed: (){
+                  onPressed: () async{
                     Ingrediente ingrediente;
-                    if(kgL == "Kg"){
+                    if(kgL == "g"){
                       ingrediente = new Ingrediente(nome: nomeController.text, ehPeso: true, pesoIngrediente: double.parse(qtdController.text), ehVolume: false, volumeIngrediente: 0, preco: double.parse(precoController.text),horarioAdicionado: DateTime.now().toString(), horarioUsado: DateTime.now().toString(), validade: dateTime.toString(), marca: marcaController.text);
                     }else{
                       ingrediente = new Ingrediente(nome: nomeController.text, ehPeso: false, pesoIngrediente: 0, ehVolume: true, volumeIngrediente: double.parse(qtdController.text), preco: double.parse(precoController.text),horarioAdicionado: DateTime.now().toString(), horarioUsado: DateTime.now().toString(), validade: dateTime.toString(), marca: marcaController.text);
                     }
-                    addIngredienteEstoque(ingrediente);
+                    await addIngredienteEstoque(ingrediente);
                     print("entrou");
+                    Map<String, dynamic> estoque = await getIngredientesEstoque();
+                    print(estoque.keys.toList());
                   },
                 ),
               ),
