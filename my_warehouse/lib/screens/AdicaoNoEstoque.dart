@@ -168,19 +168,40 @@ class _AdicaoNoEstoqueState extends State<AdicaoNoEstoque> {
                   onPressed: () async{
                     Ingrediente ingrediente;
                     double preco = double.parse(precoController.text.replaceAll(",", "."));
+                    bool ehPeso;
+                    bool ehVolume;
+                    double volume;
+                    double peso;
                     if(kgL == 'kg'){
-                      ingrediente = new Ingrediente(nome: nomeController.text, ehPeso: true, ehVolume: false, pesoIngrediente: double.parse(qtdController.text)*1000, preco: preco,horarioAdicionado: DateTime.now().toString(), validade: dateTime.toString(), marca: marcaController.text);
+                      ehPeso = true;
+                      ehVolume = false;
+                      peso = 1000*double.parse(qtdController.text.replaceAll(',', '.'));
                     }
                     if(kgL == "g"){
-                      ingrediente = new Ingrediente(nome: nomeController.text, ehPeso: true, ehVolume: false, pesoIngrediente: double.parse(qtdController.text), preco: preco,horarioAdicionado: DateTime.now().toString(), validade: dateTime.toString(), marca: marcaController.text);
+                      ehPeso = true;
+                      ehVolume = false;
+                      peso = double.parse(qtdController.text.replaceAll(',', '.'));
                     }
                     else if(kgL == 'l'){
-                      ingrediente = new Ingrediente(nome: nomeController.text, ehPeso: false, ehVolume: true, volumeIngrediente: 1000*double.parse(qtdController.text), preco: preco,horarioAdicionado: DateTime.now().toString(), validade: dateTime.toString(), marca: marcaController.text);
+                      ehPeso = false;
+                      ehVolume = true;
+                      volume = 1000*double.parse(qtdController.text.replaceAll(',', '.'));
                     }
                     else{
-                      ingrediente = new Ingrediente(nome: nomeController.text, ehPeso: false, ehVolume: true, volumeIngrediente: double.parse(qtdController.text), preco: preco,horarioAdicionado: DateTime.now().toString(), validade: dateTime.toString(), marca: marcaController.text);
+                      ehPeso = false;
+                      ehVolume = true;
+                      volume = double.parse(qtdController.text.replaceAll(',', '.'));
                     }
-                    print(ingrediente.toJson());
+                    ingrediente = new Ingrediente(
+                      nome: this.nomeController.text,
+                      ehVolume: ehVolume,
+                      ehPeso: ehPeso,
+                      pesoIngrediente: peso,
+                      volumeIngrediente: volume,
+                      horarioAdicionado: DateTime.now().toString(),
+                      validade: this.dateTime.toString(),
+                      marca: this.marcaController.text
+                    );
                     //Trecho para parecer que as coisas foram instantaneas
                     if(!this.widget.estoque.containsKey(ingrediente.nome)){
                       this.widget.estoque[ingrediente.nome] = new Map<String, dynamic>();

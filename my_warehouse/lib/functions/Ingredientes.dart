@@ -129,7 +129,7 @@ Future<void> removerIngredienteEstoque({Ingrediente ingrediente}) async{
   await saveDocument(docName: nomeArquivoIngredientesEstoque, map: reload);
 }
 
-Future<List<Ingrediente>> consumirIngrediente({String tipo, double peso, double volume}) async{
+Future<List<Ingrediente>> consumirIngrediente({String tipo, double quantidade}) async{
   Map<String, dynamic> estoque = await getDocument(docName: nomeArquivoIngredientesEstoque);
   Map<String, dynamic> usados = await getDocument(docName: nomeArquivoIngredientesUsados);
   List<Ingrediente> ret = new List<Ingrediente>();
@@ -138,7 +138,7 @@ Future<List<Ingrediente>> consumirIngrediente({String tipo, double peso, double 
   datasProdutos.sort((a,b) => a.compareTo(b));//Lista crescente
   double soma = 0.0;
   int i=0;
-  while((peso!=null && soma<peso) || (volume!=null && soma<volume)){
+  while(soma<quantidade){
     if(i>=datasProdutos.length){
       throw("Não tem estoque suficiente desse produto");
     }
@@ -146,29 +146,23 @@ Future<List<Ingrediente>> consumirIngrediente({String tipo, double peso, double 
     if(!usados.containsKey(ingrediente.nome))
       usados[ingrediente.nome] = new Map<String, dynamic>();
     if(ingrediente.ehPeso){
-      if(peso==null){
-        throw("Métrica para tirar do estoque é diferente da métrica passada");
-      }
-      if(soma+ingrediente.pesoIngrediente>=peso){
+      if(soma+ingrediente.pesoIngrediente>=quantidade){
         estoque[tipo].remove(ingrediente.id);
         i++;
       }
       else{
-        ingrediente.pesoIngrediente = peso - soma;
+        ingrediente.pesoIngrediente = quantidade - soma;
         estoque[tipo][ingrediente.id]['peso_ingrediente'] = estoque[tipo][ingrediente.id]['peso_ingrediente'] - ingrediente.pesoIngrediente;
       }
       soma = soma + ingrediente.pesoIngrediente;
     }
     else if(ingrediente.ehVolume){
-      if(volume==null){
-        throw("Métrica para tirar do estoque é diferente da métrica passada");
-      }
-      if(soma+ingrediente.volumeIngrediente>=peso){
+      if(soma+ingrediente.volumeIngrediente>=quantidade){
         estoque[tipo].remove(ingrediente.id);
         i++;
       }
       else{
-        ingrediente.volumeIngrediente = volume - soma;
+        ingrediente.volumeIngrediente = quantidade - soma;
         estoque[tipo][ingrediente.id]['volume_ingrediente'] = estoque[tipo][ingrediente.id]['volume_ingrediente'] - ingrediente.volumeIngrediente;
       }
       soma = soma + ingrediente.volumeIngrediente;
@@ -177,11 +171,40 @@ Future<List<Ingrediente>> consumirIngrediente({String tipo, double peso, double 
       throw("Ingrediente "+ingrediente.id+" sem métrica de quantidade no estoque");
     }
     ingrediente.horarioUsado = DateTime.now().toString();
-    ret.add(ingrediente);
     ingrediente.id = ingrediente.id + DateTime.now().toString();
+    ret.add(ingrediente);
     usados[ingrediente.nome][ingrediente.id] = ingrediente.toJson();
   }
-  await saveDocument(docName: nomeArquivoIngredientesEstoque, map: estoque);
-  await saveDocument(docName: nomeArquivoIngredientesUsados, map: usados);
+  if(soma<quantidade){
+    return null;
+  }
+  else{
+    await saveDocument(docName: nomeArquivoIngredientesEstoque, map: estoque);
+    await saveDocument(docName: nomeArquivoIngredientesUsados, map: usados);
+  }
   return ret;
+}
+
+Future<int> checkEstoque({String tipo, double quantidade}) async{
+  Map<String, dynamic> estoque = await getDocument(docName: nomeArquivoIngredientesEstoque);
+  if(estoque.containsKey(tipo)){
+    List<String> datasProdutos = estoque[tipo].keys.toList();
+    datasProdutos.sort((a,b) => a.compareTo(b));//Lista crescente
+    int i=0;
+    double soma = 0.0;
+    while(i<datasProdutos.length && soma<quantidade){
+      Ingrediente ingrediente = Ingrediente.fromJson(estoque[tipo][datasProdutos[i]]);
+      if(ingrediente.ehPeso){
+        soma = soma + ingrediente.pesoIngrediente;
+      }
+      else{
+        soma = soma + ingrediente.volumeIngrediente;
+      }
+    }
+    if(soma>=quantidade){
+      return soma~/quantidade;
+    }
+  }
+  return (-1);
+
 }
