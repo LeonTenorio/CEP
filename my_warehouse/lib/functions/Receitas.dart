@@ -116,14 +116,14 @@ Future<List<dynamic>> fazerReceita({Receita receita}) async{//Desculpem, vai ret
   return [true, ''];
 }
 
-Future<bool> venderReceita({Receita receita, double precoVenda}) async{
+Future<bool> venderReceita({Receita receita, double preco}) async{
   Map<String, dynamic> reloadFeitos = await getDocument(docName: nomeArquivoReceitasFeitas);
   Map<String, dynamic> reloadVendidos = await getDocument(docName: nomeArquivoReceitasVendidas);
   if(reloadFeitos.containsKey(receita.horarioFeito)){
     receita = Receita.fromJson(reloadFeitos[receita.horarioFeito]);
     reloadFeitos[receita.horarioFeito] = null;
     reloadFeitos.remove(receita.horarioFeito);
-    receita.percentualLucro = precoVenda;
+    receita.percentualLucro = preco;
     receita.horarioComercializado = DateTime.now().toString();
     reloadVendidos[receita.horarioComercializado] = receita.toJson();
     await saveDocument(docName: nomeArquivoReceitasVendidas, map: reloadVendidos);

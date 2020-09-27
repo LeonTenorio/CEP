@@ -200,7 +200,8 @@ class _AdicaoNoEstoqueState extends State<AdicaoNoEstoque> {
                       volumeIngrediente: volume,
                       horarioAdicionado: DateTime.now().toString(),
                       validade: this.dateTime.toString(),
-                      marca: this.marcaController.text
+                      marca: this.marcaController.text,
+                      preco: preco
                     );
                     //Trecho para parecer que as coisas foram instantaneas
                     if(!this.widget.estoque.containsKey(ingrediente.nome)){

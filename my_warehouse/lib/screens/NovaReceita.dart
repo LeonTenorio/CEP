@@ -1,23 +1,42 @@
 import 'package:flutter/material.dart';
 import 'package:my_warehouse/functions/Ingredientes.dart';
+import 'package:my_warehouse/functions/Receitas.dart';
 import 'package:my_warehouse/models/Ingredientes.dart';
+import 'package:my_warehouse/models/Receitas.dart';
 import 'package:my_warehouse/widgets/loadingWidget.dart';
 import '../main.dart';
 
 
-//Diria que vai ser uma STATEFUL por precisar adicionar receita a partir de ingredientes jah existentes entao teria alguma pesquisa de ingredientes
-//Criou nova receita nao esquecer de dar receitas.add(receita)
+//Chamem o metodo "createReceita"
 
 class NovaReceita extends StatefulWidget {
-  List<dynamic> receitas;
-  NovaReceita({this.receitas});
+  List<Receita> receitas;
+  List<int> quantidadeFeita;
+  NovaReceita({this.receitas, this.quantidadeFeita});
 
   @override
   _NovaReceitaState createState() => _NovaReceitaState();
 }
 
 class _NovaReceitaState extends State<NovaReceita> {
-  List<Ingrediente> ingredientes = new List<Ingrediente>();
+  List<String> ingredientes = new List<String>();
+
+  createReceita(String nome, double precoReceita, List<String> nomesIngredientes, List<double> quantidadeIngredientes){
+    Receita receita = Receita(
+      nome: nome,
+      horarioAdicionado: DateTime.now().toString(),
+      precoReceita: precoReceita,
+      horarioAtualizado: DateTime.now().toString(),
+      nomesIngredientes: nomesIngredientes,
+      quantidadesIngredientes: quantidadeIngredientes,
+    );
+    if(!this.widget.receitas.contains(receita.nome)){
+      this.widget.receitas.add(receita);
+      this.widget.quantidadeFeita.add(0);
+    }
+    addNovaReceita(receita: receita);
+    Navigator.pop(context);
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -101,7 +120,7 @@ class _NovaReceitaState extends State<NovaReceita> {
 }
 
 class AdicionarIngrediente extends StatefulWidget {
-  List<Ingrediente> ingredientes;
+  List<String> ingredientes;
   AdicionarIngrediente({this.ingredientes});
 
   @override
@@ -174,7 +193,7 @@ class _AdicionarIngredienteState extends State<AdicionarIngrediente> {
             child: Text("Adicionar", style: TextStyle(fontSize: 16.0),),
             onPressed: (){
               if(this.ingrediente!=null){
-                this.widget.ingredientes.add(ingrediente);
+                this.widget.ingredientes.add(ingrediente.nome);
               }
               Navigator.pop(context);
             },
