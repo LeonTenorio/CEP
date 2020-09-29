@@ -5,7 +5,8 @@ import '../models/Ingredientes.dart';
 
 class AdicaoNoEstoque extends StatefulWidget{
   Map<String, dynamic> estoque;
-  AdicaoNoEstoque({this.estoque});
+  String name;
+  AdicaoNoEstoque({this.estoque, this.name});
   @override
   _AdicaoNoEstoqueState createState() => _AdicaoNoEstoqueState();
 }
@@ -13,16 +14,28 @@ class AdicaoNoEstoque extends StatefulWidget{
 class _AdicaoNoEstoqueState extends State<AdicaoNoEstoque> {
 
   DateTime dateTime;
-  String kgL;
-  final nomeController = TextEditingController();
-  final marcaController = TextEditingController();
-  final qtdController = TextEditingController();
-  final precoController = TextEditingController();
+  String kgL = " ";
+  TextEditingController nomeController;
+  TextEditingController marcaController;
+  TextEditingController qtdController;
+  TextEditingController precoController;
+
+  @override
+  void initState() {
+    nomeController = TextEditingController();
+    marcaController = TextEditingController();
+    qtdController = TextEditingController();
+    precoController = TextEditingController();
+    if(this.widget.name!=null){
+      nomeController = TextEditingController(text: this.widget.name);
+    }
+    super.initState();
+  }
 
   @override
   Widget build(BuildContext context) {
-    
     return Scaffold(
+      resizeToAvoidBottomInset: false,
       body: Container(
         padding: EdgeInsets.only(top: 30.0, right: 5.0, left: 5.0),
         child:
@@ -36,16 +49,18 @@ class _AdicaoNoEstoqueState extends State<AdicaoNoEstoque> {
                         child: Container(
                           margin: EdgeInsets.only(left: 5.0, right: 5.0),
                           child:Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
                             children: [
-                              Text("Ingrediente: "),
+                              Text("Ingrediente: ", style: TextStyle(fontSize: 16.0),),
                               SizedBox(
-                                width: 250.0,
+                                width: 235.0,
                                 height: 50.0,
                                 child: Container(
                                   margin: EdgeInsets.only(top: 5.0, bottom: 12.0, left: 3.0),
                                   child: new TextField(
                                     controller: nomeController,
-                                )
+                                    style: TextStyle(fontFamily: 'Roboto', fontSize: 16.0),
+                                  )
                                 )
                               )
                             ],
@@ -56,15 +71,17 @@ class _AdicaoNoEstoqueState extends State<AdicaoNoEstoque> {
                         child: Container(
                           margin: EdgeInsets.only(left: 5.0, right: 5.0),
                           child:Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
                             children: [
-                              Text("Marca: "),
+                              Text("Marca: ", style: TextStyle(fontSize: 16.0),),
                               SizedBox(
-                                width: 280.0,
+                                width: 270.0,
                                 height: 50.0,
                                 child: Container(
                                   margin: EdgeInsets.only(top: 5.0, bottom: 12.0, left: 3.0),
                                   child: new TextField(
                                     controller: marcaController,
+                                    style: TextStyle(fontFamily: 'Roboto', fontSize: 16.0),
                                 )
                                 )
                               )
@@ -76,8 +93,9 @@ class _AdicaoNoEstoqueState extends State<AdicaoNoEstoque> {
                         child: Container(
                           margin: EdgeInsets.only(left: 5.0, right: 5.0),
                           child:Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
                             children: [
-                              Text("Quantidade: "),
+                              Text("Quantidade: ", style: TextStyle(fontSize: 16.0),),
                               SizedBox(
                                 width: 200.0,
                                 height: 50.0,
@@ -85,11 +103,12 @@ class _AdicaoNoEstoqueState extends State<AdicaoNoEstoque> {
                                   margin: EdgeInsets.only(top: 5.0, bottom: 12.0, left: 3.0, right: 6.0),
                                   child: new TextField(
                                     controller: qtdController,
+                                    style: TextStyle(fontFamily: 'Roboto', fontSize: 16.0),
                                 )
                                 )
                               ),
                               DropdownButton(
-                                items: <String>['kg', 'g', 'l', 'ml'].map((String value){
+                                items: <String>[" ", 'kg', 'g', 'l', 'ml'].map((String value){
                                   return new DropdownMenuItem(
                                     value:value,
                                     child: new Text(value)
@@ -111,15 +130,17 @@ class _AdicaoNoEstoqueState extends State<AdicaoNoEstoque> {
                         child: Container(
                           margin: EdgeInsets.only(left: 5.0, right: 5.0),
                           child:Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
                             children: [
-                              Text("Preço: "),
+                              Text("Preço: ", style: TextStyle(fontSize: 16.0),),
                               SizedBox(
-                                width: 280.0,
+                                width: 270.0,
                                 height: 50.0,
                                 child: Container(
                                   margin: EdgeInsets.only(top: 5.0, bottom: 12.0, left: 3.0),
                                   child: new TextField(
                                     controller: precoController,
+                                    style: TextStyle(fontFamily: 'Roboto', fontSize: 16.0),
                                   )
                                 )
                               )
@@ -131,15 +152,16 @@ class _AdicaoNoEstoqueState extends State<AdicaoNoEstoque> {
                         child: Container(
                           margin: EdgeInsets.only(left: 5.0, right: 5.0),
                           child:Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
                             children: [
-                              Text("Validade: "),
+                              Text("Validade: ", style: TextStyle(fontSize: 16.0),),
                               SizedBox(
                                 width: 260.0,
                                 height: 50.0,
                                 child: Container(
                                   margin: EdgeInsets.only(top: 5.0, bottom: 12.0, left: 3.0),
                                   child: RaisedButton(
-                                    child: Text(dateTime == null ? "Escolha uma data" : "${dateTime.day}-${dateTime.month}-${dateTime.year}"),
+                                    child: Text(dateTime == null ? "Escolha uma data" : "${dateTime.day}/${dateTime.month}/${dateTime.year}"),
                                     onPressed: (){
                                       showDatePicker(
                                         context: context, 
@@ -172,6 +194,7 @@ class _AdicaoNoEstoqueState extends State<AdicaoNoEstoque> {
                     bool ehVolume;
                     double volume;
                     double peso;
+                    int quantidade;
                     if(kgL == 'kg'){
                       ehPeso = true;
                       ehVolume = false;
@@ -187,17 +210,27 @@ class _AdicaoNoEstoqueState extends State<AdicaoNoEstoque> {
                       ehVolume = true;
                       volume = 1000*double.parse(qtdController.text.replaceAll(',', '.'));
                     }
-                    else{
+                    else if(kgL == "ml"){
                       ehPeso = false;
                       ehVolume = true;
                       volume = double.parse(qtdController.text.replaceAll(',', '.'));
                     }
+                    else{
+                      ehPeso = false;
+                      ehVolume = false;
+                      quantidade = int.parse(qtdController.text);
+                    }
+                    print("ehPeso");
+                    print(ehPeso);
+                    print("ehVolume");
+                    print(ehVolume);
                     ingrediente = new Ingrediente(
                       nome: this.nomeController.text,
                       ehVolume: ehVolume,
                       ehPeso: ehPeso,
                       pesoIngrediente: peso,
                       volumeIngrediente: volume,
+                      quantidade: quantidade,
                       horarioAdicionado: DateTime.now().toString(),
                       validade: this.dateTime.toString(),
                       marca: this.marcaController.text,

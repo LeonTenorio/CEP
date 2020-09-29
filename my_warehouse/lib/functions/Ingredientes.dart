@@ -168,7 +168,15 @@ Future<List<Ingrediente>> consumirIngrediente({String tipo, double quantidade}) 
       soma = soma + ingrediente.volumeIngrediente;
     }
     else{
-      throw("Ingrediente "+ingrediente.id+" sem métrica de quantidade no estoque");
+      if(soma+ingrediente.quantidade>=quantidade){
+        estoque[tipo].remove(ingrediente.id);
+        i++;
+      }
+      else{
+        ingrediente.quantidade = (quantidade - soma).toInt();
+        estoque[tipo][ingrediente.id]['quantidade'] = estoque[tipo][ingrediente.id]['quantidade'] - ingrediente.quantidade;
+      }
+      soma = soma + ingrediente.volumeIngrediente;
     }
     ingrediente.horarioUsado = DateTime.now().toString();
     ingrediente.id = ingrediente.id + DateTime.now().toString();
@@ -197,8 +205,11 @@ Future<int> checkEstoque({String tipo, double quantidade}) async{
       if(ingrediente.ehPeso){
         soma = soma + ingrediente.pesoIngrediente;
       }
-      else{
+      else if(ingrediente.ehVolume){
         soma = soma + ingrediente.volumeIngrediente;
+      }
+      else{
+        soma = soma + ingrediente.quantidade;
       }
     }
     if(soma>=quantidade){

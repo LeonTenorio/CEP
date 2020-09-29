@@ -35,39 +35,79 @@ class _EstoqueState extends State<Estoque> {
     });
   }
 
+  String _textViewTipoIngrediente(double quantidade, bool ehPeso, bool ehVolume){
+    if(ehPeso){
+      if(quantidade>=1000){
+        return (quantidade/1000).toStringAsFixed(1).replaceAll(".", ",")+" Kg";
+      }
+      else{
+        return quantidade.toInt().toString()+" g";
+      }
+    }
+    else if(ehVolume){
+      if(quantidade>=1000){
+        return (quantidade/1000).toStringAsFixed(1).replaceAll(".", ",")+" l";
+      }
+      else{
+        return quantidade.toInt().toString()+" ml";
+      }
+    }
+    else{
+      return quantidade.toInt().toString();
+    }
+  }
+
   Widget buildIngredienteEstoque(String tipo, Map<String, dynamic> ingredientes){
     double quantidadeEstoque = 0.0;
     List<String> idsEstoque = ingredientes.keys.toList();
-    bool ehPeso = true;
+    bool ehPeso = false;
+    bool ehVolume = false;
     for(int i=0;i<idsEstoque.length;i++){
       Ingrediente ingrediente = ingredientes[idsEstoque[i]];
-      if(i==0){
-        if(ingrediente.ehVolume){
-          ehPeso = false;
-        }
-      }
-      if(ehPeso){
+      if(ingrediente.ehPeso){
+        ehPeso = true;
+        ehVolume = false;
         quantidadeEstoque = quantidadeEstoque + ingrediente.pesoIngrediente;
       }
-      else{
+      else if(ingrediente.ehVolume){
+        ehPeso = false;
+        ehVolume = true;
         quantidadeEstoque = quantidadeEstoque + ingrediente.volumeIngrediente;
       }
-      //print(ingrediente.toJson());
+      else{
+        ehPeso = false;
+        ehVolume = false;
+        quantidadeEstoque = quantidadeEstoque + ingrediente.quantidade;
+      }
+      print(ingrediente.toJson());
     }
     return Card(
-      color: laranja,
-      child: Padding(
-        padding: EdgeInsets.all(5.0),
-        child: Row(
-          children: [
-            Text(tipo, style: TextStyle(fontSize: 18.0),),
-            SizedBox(width: 10.0,),
-            ehPeso?
-            Text((quantidadeEstoque/1000).toStringAsFixed(2).replaceAll(".", ",")+" Kg", style: TextStyle(fontSize: 16.0),)
-            :Text((quantidadeEstoque/1000).toStringAsFixed(2).replaceAll(".", ",")+" L", style: TextStyle(fontSize: 16.0),)
-          ],
-        ),
-      )
+        color: laranja,
+        child: Padding(
+          padding: EdgeInsets.all(10.0),
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: [
+              Row(
+                children: [
+                  Text(tipo, style: TextStyle(fontSize: 16.0),),
+                  SizedBox(width: 10.0,),
+                  Text("Quantidade: "+_textViewTipoIngrediente(quantidadeEstoque, ehPeso, ehVolume), style: TextStyle(fontSize: 16.0),),
+                ],
+              ),
+              GestureDetector(
+                child: Icon(Icons.add, color: Colors.white, size: 25.0,),
+                onTap: () async{
+                  await Navigator.push(context, MaterialPageRoute(builder: (context) => AdicaoNoEstoque(name: tipo,)));
+                  setState(() {
+
+                  });
+                },
+              )
+            ],
+          ),
+        )
     );
   }
 
