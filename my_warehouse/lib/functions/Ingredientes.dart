@@ -151,8 +151,11 @@ Future<List<Ingrediente>> consumirIngrediente({String tipo, double quantidade}) 
         i++;
       }
       else{
+        double fracaoPeso = ingrediente.preco/ingrediente.pesoIngrediente;
         ingrediente.pesoIngrediente = quantidade - soma;
+        ingrediente.preco = fracaoPeso*ingrediente.quantidade;
         estoque[tipo][ingrediente.id]['peso_ingrediente'] = estoque[tipo][ingrediente.id]['peso_ingrediente'] - ingrediente.pesoIngrediente;
+        estoque[tipo][ingrediente.id]['preco'] = fracaoPeso*estoque[tipo][ingrediente.id]['peso_ingrediente'];
       }
       soma = soma + ingrediente.pesoIngrediente;
     }
@@ -162,8 +165,11 @@ Future<List<Ingrediente>> consumirIngrediente({String tipo, double quantidade}) 
         i++;
       }
       else{
+        double fracaoPeso = ingrediente.preco/ingrediente.volumeIngrediente;
         ingrediente.volumeIngrediente = quantidade - soma;
+        ingrediente.preco = fracaoPeso*ingrediente.volumeIngrediente;
         estoque[tipo][ingrediente.id]['volume_ingrediente'] = estoque[tipo][ingrediente.id]['volume_ingrediente'] - ingrediente.volumeIngrediente;
+        estoque[tipo][ingrediente.id]['preco'] = fracaoPeso*estoque[tipo][ingrediente.id]['volume_ingrediente'];
       }
       soma = soma + ingrediente.volumeIngrediente;
     }
@@ -173,8 +179,11 @@ Future<List<Ingrediente>> consumirIngrediente({String tipo, double quantidade}) 
         i++;
       }
       else{
+        double fracaoPeso = ingrediente.preco/ingrediente.quantidade;
         ingrediente.quantidade = (quantidade - soma).toInt();
+        ingrediente.preco = fracaoPeso*ingrediente.quantidade;
         estoque[tipo][ingrediente.id]['quantidade'] = estoque[tipo][ingrediente.id]['quantidade'] - ingrediente.quantidade;
+        estoque[tipo][ingrediente.id]['preco'] = fracaoPeso*estoque[tipo][ingrediente.id]['quantidade'];
       }
       soma = soma + ingrediente.volumeIngrediente;
     }

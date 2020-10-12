@@ -1,3 +1,5 @@
+import 'package:my_warehouse/models/Ingredientes.dart';
+
 class Receita {
   String nome;
   String horarioAdicionado;
@@ -10,6 +12,25 @@ class Receita {
   List<String> nomesIngredientes;
   List<double> quantidadesIngredientes;
   Map<String, dynamic> ingredientesUsados;
+
+  double getCusto(){
+    /*ingredientesUsados = {
+    *   "tipo1": [INGREDIENTE 1, INGREDIENTE2, ...],
+    *   "tipo2": [INGREDIENTE 3, INGREDIENTE4, ...],
+    *   ...
+    * }
+    * */
+    double custo = 0.0;
+    List<String> tiposIngredientes = this.ingredientesUsados.keys.toList();
+    for(int i=0;i<tiposIngredientes.length;i++){
+      List<dynamic> ingredientesTipo = this.ingredientesUsados[tiposIngredientes[i]];
+      for(int j=0;j<ingredientesTipo.length;j++){
+        Ingrediente ingrediente = Ingrediente.fromJson(ingredientesTipo[j]);
+        custo = custo + ingrediente.preco;
+      }
+    }
+    return custo;
+  }
 
   Receita(
       {this.nome,

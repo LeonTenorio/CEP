@@ -35,8 +35,16 @@ Future<List<Receita>> getReceitasFeitas() async{
   return await _getReceitas(docName: nomeArquivoReceitasFeitas);
 }
 
-Future<List<Receita>> getReceitasVendidas() async{
-  return await _getReceitas(docName: nomeArquivoReceitasVendidas);
+Future<Map<String, dynamic>> getReceitasVendidas() async{
+  Map<String, dynamic> ret = new Map<String, dynamic>();
+  List<Receita> receitasVendidas =  await _getReceitas(docName: nomeArquivoReceitasVendidas);
+  for(int i=0;i<receitasVendidas.length;i++){
+    if(!ret.containsKey(receitasVendidas[i].nome)){
+      ret[receitasVendidas[i].nome] = new List<dynamic>();
+    }
+    ret[receitasVendidas[i].nome].add(receitasVendidas[i]);
+  }
+  return ret;
 }
 
 Future<bool> addNovaReceita({Receita receita}) async{
