@@ -36,14 +36,10 @@ class Receita {
       {this.nome,
         this.horarioAdicionado,
         this.precoReceita,
-        this.precoComercializado,
-        this.horarioAtualizado,
-        this.horarioComercializado,
-        this.horarioFeito,
         this.nomesIngredientes,
+        this.horarioAtualizado,
         this.quantidadesIngredientes,
-        this.percentualLucro,
-        this.ingredientesUsados});
+        this.percentualLucro});
 
   Receita.fromJson(Map<String, dynamic> json) {
     nome = json['nome'];
