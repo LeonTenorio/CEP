@@ -129,6 +129,72 @@ Future<void> removerIngredienteEstoque({Ingrediente ingrediente}) async{
   await saveDocument(docName: nomeArquivoIngredientesEstoque, map: reload);
 }
 
+Future<bool> removerIngredienteEstoqueQuantidade({String tipo, double quantidade}) async{
+  Map<String, dynamic> estoque = await getDocument(docName: nomeArquivoIngredientesEstoque);
+
+  List<String> datasProdutos = estoque[tipo].keys.toList();
+  datasProdutos.sort((a,b) => a.compareTo(b));//Lista crescente
+  double soma = 0.0;
+  int i=0;
+  while(soma<quantidade){
+    if(i>=datasProdutos.length){
+      throw("Não tem estoque suficiente desse produto");
+    }
+    Ingrediente ingrediente = Ingrediente.fromJson(estoque[tipo][datasProdutos[i]]);
+    if(ingrediente.ehPeso){
+      if(soma+ingrediente.pesoIngrediente<=quantidade){
+        estoque[tipo].remove(ingrediente.id);
+        i++;
+      }
+      else{
+        double fracaoPeso = ingrediente.preco/ingrediente.pesoIngrediente;
+        ingrediente.pesoIngrediente = quantidade - soma;
+        ingrediente.preco = fracaoPeso*ingrediente.quantidade;
+        estoque[tipo][ingrediente.id]['peso_ingrediente'] = estoque[tipo][ingrediente.id]['peso_ingrediente'] - ingrediente.pesoIngrediente;
+        estoque[tipo][ingrediente.id]['preco'] = fracaoPeso*estoque[tipo][ingrediente.id]['peso_ingrediente'];
+      }
+      soma = soma + ingrediente.pesoIngrediente;
+    }
+    else if(ingrediente.ehVolume){
+      if(soma+ingrediente.volumeIngrediente<=quantidade){
+        estoque[tipo].remove(ingrediente.id);
+        i++;
+      }
+      else{
+        double fracaoPeso = ingrediente.preco/ingrediente.volumeIngrediente;
+        ingrediente.volumeIngrediente = quantidade - soma;
+        ingrediente.preco = fracaoPeso*ingrediente.volumeIngrediente;
+        estoque[tipo][ingrediente.id]['volume_ingrediente'] = estoque[tipo][ingrediente.id]['volume_ingrediente'] - ingrediente.volumeIngrediente;
+        estoque[tipo][ingrediente.id]['preco'] = fracaoPeso*estoque[tipo][ingrediente.id]['volume_ingrediente'];
+      }
+      soma = soma + ingrediente.volumeIngrediente;
+    }
+    else{
+      if(soma+ingrediente.quantidade<=quantidade){
+        estoque[tipo].remove(ingrediente.id);
+        i++;
+      }
+      else{
+        double fracaoPeso = ingrediente.preco/ingrediente.quantidade;
+        ingrediente.quantidade = (quantidade - soma).toInt();
+        ingrediente.preco = fracaoPeso*ingrediente.quantidade;
+        estoque[tipo][ingrediente.id]['quantidade'] = estoque[tipo][ingrediente.id]['quantidade'] - ingrediente.quantidade;
+        estoque[tipo][ingrediente.id]['preco'] = fracaoPeso*estoque[tipo][ingrediente.id]['quantidade'];
+      }
+      soma = soma + ingrediente.quantidade.toDouble();
+    }
+    ingrediente.horarioUsado = DateTime.now().toString();
+    ingrediente.id = ingrediente.id + DateTime.now().toString();
+  }
+  if(soma<quantidade){
+    return false;
+  }
+  else{
+    await saveDocument(docName: nomeArquivoIngredientesEstoque, map: estoque);
+    return true;
+  }
+}
+
 Future<List<Ingrediente>> consumirIngrediente({String tipo, double quantidade}) async{
   Map<String, dynamic> estoque = await getDocument(docName: nomeArquivoIngredientesEstoque);
   Map<String, dynamic> usados = await getDocument(docName: nomeArquivoIngredientesUsados);
@@ -146,7 +212,7 @@ Future<List<Ingrediente>> consumirIngrediente({String tipo, double quantidade}) 
     if(!usados.containsKey(ingrediente.nome))
       usados[ingrediente.nome] = new Map<String, dynamic>();
     if(ingrediente.ehPeso){
-      if(soma+ingrediente.pesoIngrediente>=quantidade){
+      if(soma+ingrediente.pesoIngrediente<=quantidade){
         estoque[tipo].remove(ingrediente.id);
         i++;
       }
@@ -160,7 +226,7 @@ Future<List<Ingrediente>> consumirIngrediente({String tipo, double quantidade}) 
       soma = soma + ingrediente.pesoIngrediente;
     }
     else if(ingrediente.ehVolume){
-      if(soma+ingrediente.volumeIngrediente>=quantidade){
+      if(soma+ingrediente.volumeIngrediente<=quantidade){
         estoque[tipo].remove(ingrediente.id);
         i++;
       }
@@ -174,7 +240,7 @@ Future<List<Ingrediente>> consumirIngrediente({String tipo, double quantidade}) 
       soma = soma + ingrediente.volumeIngrediente;
     }
     else{
-      if(soma+ingrediente.quantidade>=quantidade){
+      if(soma+ingrediente.quantidade<=quantidade){
         estoque[tipo].remove(ingrediente.id);
         i++;
       }
@@ -185,7 +251,7 @@ Future<List<Ingrediente>> consumirIngrediente({String tipo, double quantidade}) 
         estoque[tipo][ingrediente.id]['quantidade'] = estoque[tipo][ingrediente.id]['quantidade'] - ingrediente.quantidade;
         estoque[tipo][ingrediente.id]['preco'] = fracaoPeso*estoque[tipo][ingrediente.id]['quantidade'];
       }
-      soma = soma + ingrediente.volumeIngrediente;
+      soma = soma + ingrediente.quantidade.toDouble();
     }
     ingrediente.horarioUsado = DateTime.now().toString();
     ingrediente.id = ingrediente.id + DateTime.now().toString();
