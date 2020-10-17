@@ -4,7 +4,10 @@ import 'package:my_warehouse/functions/Receitas.dart';
 import 'package:my_warehouse/models/Ingredientes.dart';
 import 'package:my_warehouse/models/Receitas.dart';
 import 'package:my_warehouse/widgets/loadingWidget.dart';
+import '../functions/Ingredientes.dart';
+import '../functions/Ingredientes.dart';
 import '../main.dart';
+import '../models/Ingredientes.dart';
 
 
 //Chamem o metodo "createReceita"
@@ -19,7 +22,11 @@ class NovaReceita extends StatefulWidget {
 }
 
 class _NovaReceitaState extends State<NovaReceita> {
-  List<String> ingredientes = new List<String>();
+  List<String> ingredientes = ['Mariola','Cu de curioso'];
+  List<String> kglList = [];
+  TextEditingController nomeController = TextEditingController();
+  TextEditingController precoController = TextEditingController();
+  List<TextEditingController> qtdControllers = [];
 
   createReceita(String nome, double precoReceita, List<String> nomesIngredientes, List<double> quantidadeIngredientes){
     Receita receita = Receita(
@@ -40,6 +47,10 @@ class _NovaReceitaState extends State<NovaReceita> {
 
   @override
   Widget build(BuildContext context) {
+    qtdControllers.add(TextEditingController());
+    qtdControllers.add(TextEditingController());
+    kglList.add(" ");
+    kglList.add(" ");
     return Scaffold(
         body: Padding(
           padding: EdgeInsets.only(top: 10.0, right: 5.0, left: 5.0),
@@ -65,7 +76,6 @@ class _NovaReceitaState extends State<NovaReceita> {
                     physics: NeverScrollableScrollPhysics(),
                     shrinkWrap: true,
                     children: [
-                      Text("Preencha esses campos", style: TextStyle(fontSize: 16.0), textAlign: TextAlign.center,),
                       SizedBox(height: 10.0,),
                       ListView(
                         shrinkWrap: true,
@@ -73,12 +83,78 @@ class _NovaReceitaState extends State<NovaReceita> {
                         children: [
                           //ADICIONAR OS CAMPOS
                           //ACHO QUE UMA LIST DE WIDGETS PARA VER OS INGREDIENTES E QUANTIDADES DELES
+                          Text("Nome da receita: ", style: TextStyle(fontSize: 16.0),),
+                          SizedBox(
+                            width: 200.0,
+                            height: 50.0,
+                            child: Container(
+                              margin: EdgeInsets.only(top: 5.0, bottom: 12.0, left: 3.0, right: 6.0),
+                              child: new TextField(
+                                controller: nomeController,
+                                style: TextStyle(fontFamily: 'Roboto', fontSize: 16.0),
+                            )
+                            )
+                          ),
+                          Text("Preco da receita: ", style: TextStyle(fontSize: 16.0),),
+                          SizedBox(
+                            width: 200.0,
+                            height: 50.0,
+                            child: Container(
+                              margin: EdgeInsets.only(top: 5.0, bottom: 12.0, left: 3.0, right: 6.0),
+                              child: new TextField(
+                                controller: precoController,
+                                style: TextStyle(fontFamily: 'Roboto', fontSize: 16.0),
+                            )
+                            )
+                          ),
+                          Text("Lista de ingredientes: ", style: TextStyle(fontSize: 16.0),),
                           ListView.builder(
                             shrinkWrap: true,
                             physics: NeverScrollableScrollPhysics(),
                             itemCount: this.ingredientes.length,
                             itemBuilder: (BuildContext context, int index){
-                              return Container();
+                              return Card(
+                                child: Container(
+                                  margin: EdgeInsets.all(5.0),
+                                  child: Row(
+                                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                    children: [
+                                      Text("${ingredientes[index]}",style: TextStyle(fontSize: 16.0)),
+                                      Row(
+                                        children: [
+                                          SizedBox(
+                                            width: 50.0,
+                                            height: 50.0,
+                                            child: Container(
+                                              margin: EdgeInsets.only(top: 5.0, bottom: 12.0, left: 3.0, right: 6.0),
+                                              child: new TextField(
+                                                controller: qtdControllers[index],
+                                                style: TextStyle(fontFamily: 'Roboto', fontSize: 16.0),
+                                              )
+                                            )
+                                          ),
+                                          SizedBox(width: 5.0),
+                                          DropdownButton(
+                                            items: <String>[" ", 'kg', 'g', 'l', 'ml'].map((String value){
+                                              return new DropdownMenuItem(
+                                                value:value,
+                                                child: new Text(value)
+                                              );
+                                            }).toList(), 
+                                            onChanged: (String data){
+                                              setState(() {
+                                                kglList[index] = data;
+                                              });
+                                            },
+                                            value: kglList[index]
+                                          )
+                                        ],
+                                      )
+                                      
+                                    ],
+                                  )
+                                ),
+                              );
                             },
                           ),
                           SizedBox(height: 5.0,),
@@ -167,6 +243,7 @@ class _AdicionarIngredienteState extends State<AdicionarIngrediente> {
       );
     }
     else{
+      print("///////////////////////////////////////${ingredientes.length}");
       return AlertDialog(
         title: Text("Selecione o ingrediente", style: TextStyle(fontSize: 18.0),),
         content: Container(
@@ -177,7 +254,14 @@ class _AdicionarIngredienteState extends State<AdicionarIngrediente> {
             child: ListView(
               shrinkWrap: true,
               children: [
-                Container()
+                ListView.builder(
+                  itemCount: ingredientes.length,
+                  itemBuilder: (context,index){
+                    return ListTile(
+                      title: Text("${ingredientes[index].nome}"),
+                    );
+                  },
+                )
               ],
             ),
           ),
