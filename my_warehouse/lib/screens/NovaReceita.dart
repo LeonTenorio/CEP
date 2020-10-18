@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:my_warehouse/functions/Color.dart';
 import 'package:my_warehouse/functions/Ingredientes.dart';
 import 'package:my_warehouse/functions/Receitas.dart';
 import 'package:my_warehouse/models/Ingredientes.dart';
@@ -21,12 +22,14 @@ class NovaReceita extends StatefulWidget {
   _NovaReceitaState createState() => _NovaReceitaState();
 }
 
+List<String> ingredientesLista = [];
+List<TextEditingController> qtdControllers = [];
+List<String> kglList = [];
+
 class _NovaReceitaState extends State<NovaReceita> {
-  List<String> ingredientes = ['Mariola','Cu de curioso'];
-  List<String> kglList = [];
+  
   TextEditingController nomeController = TextEditingController();
   TextEditingController precoController = TextEditingController();
-  List<TextEditingController> qtdControllers = [];
 
   createReceita(String nome, double precoReceita, List<String> nomesIngredientes, List<double> quantidadeIngredientes){
     Receita receita = Receita(
@@ -46,11 +49,15 @@ class _NovaReceitaState extends State<NovaReceita> {
   }
 
   @override
+  void dispose(){
+    ingredientesLista = [];
+    qtdControllers = [];
+    kglList = [];
+    super.dispose();
+  }
+
+  @override
   Widget build(BuildContext context) {
-    qtdControllers.add(TextEditingController());
-    qtdControllers.add(TextEditingController());
-    kglList.add(" ");
-    kglList.add(" ");
     return Scaffold(
         body: Padding(
           padding: EdgeInsets.only(top: 10.0, right: 5.0, left: 5.0),
@@ -111,7 +118,7 @@ class _NovaReceitaState extends State<NovaReceita> {
                           ListView.builder(
                             shrinkWrap: true,
                             physics: NeverScrollableScrollPhysics(),
-                            itemCount: this.ingredientes.length,
+                            itemCount: ingredientesLista.length,
                             itemBuilder: (BuildContext context, int index){
                               return Card(
                                 child: Container(
@@ -119,7 +126,7 @@ class _NovaReceitaState extends State<NovaReceita> {
                                   child: Row(
                                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                                     children: [
-                                      Text("${ingredientes[index]}",style: TextStyle(fontSize: 16.0)),
+                                      Text("${ingredientesLista[index]}",style: TextStyle(fontSize: 16.0)),
                                       Row(
                                         children: [
                                           SizedBox(
@@ -150,7 +157,6 @@ class _NovaReceitaState extends State<NovaReceita> {
                                           )
                                         ],
                                       )
-                                      
                                     ],
                                   )
                                 ),
@@ -172,7 +178,7 @@ class _NovaReceitaState extends State<NovaReceita> {
                                   await showDialog(
                                     context: context,
                                     builder: (BuildContext context){
-                                      return AdicionarIngrediente(ingredientes: this.ingredientes,);
+                                      return AdicionarIngrediente(ingredientes: ingredientesLista,);
                                     }
                                   );
                                   setState(() {
@@ -187,6 +193,18 @@ class _NovaReceitaState extends State<NovaReceita> {
                     ],
                   ),
                 ),
+              ),
+              SizedBox(height: 210),
+              RaisedButton(
+                onPressed: (){
+                  List<double> qtdIngredientes;
+                  qtdControllers.forEach((element) {
+                    qtdIngredientes.add(double.parse(element.text.replaceAll(",", ".")));
+                  });
+                  createReceita(nomeController.text, double.parse(precoController.text.replaceAll(",", ".")), ingredientesLista, qtdIngredientes);
+                },
+                color: laranja,
+                child: Text("Adicionar receita")
               )
             ],
           ),
@@ -207,6 +225,8 @@ class _AdicionarIngredienteState extends State<AdicionarIngrediente> {
   List<TipoIngrediente> ingredientes;
   Ingrediente ingrediente;
   bool isLoading = true;
+  String ingredienteSelecionado = " ";
+  int selectedIndex = -1;
 
   @override
   void initState() {
@@ -243,7 +263,7 @@ class _AdicionarIngredienteState extends State<AdicionarIngrediente> {
       );
     }
     else{
-      print("///////////////////////////////////////${ingredientes.length}");
+      print("///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////${ingredientes.length}");
       return AlertDialog(
         title: Text("Selecione o ingrediente", style: TextStyle(fontSize: 18.0),),
         content: Container(
@@ -251,19 +271,27 @@ class _AdicionarIngredienteState extends State<AdicionarIngrediente> {
           width: MediaQuery.of(context).size.width*0.7,
           child: Padding(
             padding: EdgeInsets.only(top: 10.0, left: 5.0, right: 5.0),
-            child: ListView(
-              shrinkWrap: true,
-              children: [
-                ListView.builder(
-                  itemCount: ingredientes.length,
-                  itemBuilder: (context,index){
-                    return ListTile(
-                      title: Text("${ingredientes[index].nome}"),
-                    );
-                  },
-                )
-              ],
-            ),
+            child:
+              ListView.builder(
+                itemCount: ingredientes.length,
+                itemBuilder: (context,index){
+                  return GestureDetector(
+                    onTap: (){
+                      ingredienteSelecionado = ingredientes[index].nome;
+                      setState(() {
+                        selectedIndex = index;
+                      });
+                    },
+                    child: Card(
+                      color: index == selectedIndex ? laranja:Colors.white,
+                      child: Container(
+                        margin: EdgeInsets.all(5.0),
+                        child: Text("${ingredientes[index].nome}",style: TextStyle(fontSize: 16.0),),
+                      )
+                    )
+                  );
+                },
+              )
           ),
         ),
         actions: [
@@ -276,10 +304,12 @@ class _AdicionarIngredienteState extends State<AdicionarIngrediente> {
           FlatButton(
             child: Text("Adicionar", style: TextStyle(fontSize: 16.0),),
             onPressed: (){
-              if(this.ingrediente!=null){
-                this.widget.ingredientes.add(ingrediente.nome);
+              if(ingredienteSelecionado != " "){
+                ingredientesLista.add(ingredienteSelecionado);
+                qtdControllers.add(TextEditingController());
+                kglList.add(" ");
+                Navigator.pop(context);
               }
-              Navigator.pop(context);
             },
           )
         ],
