@@ -98,6 +98,18 @@ class _CozinharState extends State<Cozinhar> {
           },
         ),
         FlatButton(
+          child: Text("Consumir", style: TextStyle(fontSize: 15.0),),
+          color: laranja,
+          onPressed: (){
+            excluirReceitaFeita(receita: receita);
+            quantidade--;
+            Navigator.pop(context);
+            setState(() {
+              
+            });
+          },
+        ),
+        FlatButton(
           child: Text("Vender", style: TextStyle(fontSize: 15.0),),
           color: laranja,
           onPressed: (){
@@ -201,6 +213,31 @@ class _CozinharState extends State<Cozinhar> {
       ],
     );
   }
+  
+  Widget _buildViewReceita(Receita receita, int quantidadeFeita){
+    return Card(
+      child: Padding(
+        padding: EdgeInsets.all(5.0),
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          crossAxisAlignment: CrossAxisAlignment.center,
+          children: [
+            Text(receita.nome, style: TextStyle(fontSize: 18.0),),
+            buildIconWithNumberAndFunction(icon: Icon(Icons.assignment_turned_in), number: quantidadeFeita, function: () {
+              if(quantidadeFeita>0){
+                showDialog(
+                    context: context,
+                    builder: (BuildContext context){
+                      return venderReceitaWidget(receita: receita, quantidade: quantidadeFeita);
+                    }
+                );
+              }
+            },),
+          ],
+        ),
+      ),
+    );
+  }
 
   Widget buildReceita({Receita receita, int quantidadeFeita}){
     return FutureBuilder(
@@ -208,46 +245,30 @@ class _CozinharState extends State<Cozinhar> {
       builder: (context, snapshot){
         if(snapshot.hasData){
           int quantidadePossoFazer = snapshot.data;
-          return GestureDetector(
-            child: Card(
-              child: Padding(
-                padding: EdgeInsets.all(5.0),
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  crossAxisAlignment: CrossAxisAlignment.center,
-                  children: [
-                    Text(receita.nome, style: TextStyle(fontSize: 18.0),),
-                    buildIconWithNumberAndFunction(icon: Icon(Icons.assignment_turned_in), number: quantidadeFeita, function: () {
-                      if(quantidadeFeita>0){
-                        showDialog(
-                            context: context,
-                            builder: (BuildContext context){
-                              return venderReceitaWidget(receita: receita, quantidade: quantidadeFeita);
-                            }
-                        );
-                      }
-                    },),
-                  ],
-                ),
-              ),
-            ),
-            onTap: () async{
-              await showDialog(
-                context: context,
-                builder: (BuildContext context){
-                  return buildPopUpReceita(receita, (){
-                    if(quantidadePossoFazer>0){
-                      fazerReceita(receita: receita);
-                      setState(() {
-                        quantidadeFeita++;
+          if(quantidadePossoFazer>0){
+            return GestureDetector(
+              child: _buildViewReceita(receita, quantidadeFeita),
+              onTap: () async{
+                await showDialog(
+                    context: context,
+                    builder: (BuildContext context){
+                      return buildPopUpReceita(receita, (){
+                        if(quantidadePossoFazer>0){
+                          fazerReceita(receita: receita);
+                          Navigator.pop(context);
+                          setState(() {
+                            quantidadeFeita++;
+                          });
+                        }
                       });
-                      Navigator.pop(context);
                     }
-                  });
-                }
-              );
-            },
-          );
+                );
+              },
+            );
+          }
+          else{
+            return _buildViewReceita(receita, quantidadeFeita);
+          }
         }
         else{
           return loading(height: 18.0, width: MediaQuery.of(context).size.width*0.7);

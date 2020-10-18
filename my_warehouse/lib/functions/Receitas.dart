@@ -73,6 +73,7 @@ Future<bool> removerReceita({String nome}) async{
 }
 
 Future<void> _addReceitaFeita({Receita receita}) async{
+  print(receita.horarioFeito);
   Map<String, dynamic> reload = await getDocument(docName: nomeArquivoReceitasFeitas);
   reload[receita.horarioFeito] = receita.toJson();
   await saveDocument(docName: nomeArquivoReceitasFeitas, map: reload);
@@ -124,9 +125,24 @@ Future<List<dynamic>> fazerReceita({Receita receita}) async{//Desculpem, vai ret
   return [true, ''];
 }
 
+Receita getPrimeiraReceitaFeita(Map<String, dynamic> reloadFeitos, String nome){
+  List<String> keys = reloadFeitos.keys.toList();
+  Receita ret;
+  for(int i=0;i<keys.length;i++){
+    Receita receita = Receita.fromJson(reloadFeitos[keys[i]]);
+    if(receita.nome==nome){
+      if(ret==null || (ret!=null && DateTime.parse(receita.horarioFeito).isBefore(DateTime.parse(ret.horarioFeito)))){
+        ret = receita;
+      }
+    }
+  }
+  return ret;
+}
+
 Future<bool> venderReceita({Receita receita, double preco}) async{
   Map<String, dynamic> reloadFeitos = await getDocument(docName: nomeArquivoReceitasFeitas);
   Map<String, dynamic> reloadVendidos = await getDocument(docName: nomeArquivoReceitasVendidas);
+  receita = getPrimeiraReceitaFeita(reloadFeitos, receita.nome);
   if(reloadFeitos.containsKey(receita.horarioFeito)){
     receita = Receita.fromJson(reloadFeitos[receita.horarioFeito]);
     reloadFeitos[receita.horarioFeito] = null;
@@ -135,6 +151,19 @@ Future<bool> venderReceita({Receita receita, double preco}) async{
     receita.horarioComercializado = DateTime.now().toString();
     reloadVendidos[receita.horarioComercializado] = receita.toJson();
     await saveDocument(docName: nomeArquivoReceitasVendidas, map: reloadVendidos);
+    await saveDocument(docName: nomeArquivoReceitasFeitas, map: reloadFeitos);
+    return true;
+  }
+  return false;
+}
+
+Future<void> excluirReceitaFeita({Receita receita}) async{
+  Map<String, dynamic> reloadFeitos = await getDocument(docName: nomeArquivoReceitasFeitas);
+  receita = getPrimeiraReceitaFeita(reloadFeitos, receita.nome);
+  if(reloadFeitos.containsKey(receita.horarioFeito)){
+    reloadFeitos[receita.horarioFeito] = null;
+    reloadFeitos.remove(receita.horarioFeito);
+    await saveDocument(docName: nomeArquivoReceitasFeitas, map: reloadFeitos);
     return true;
   }
   return false;
