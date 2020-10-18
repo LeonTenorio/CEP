@@ -26,3 +26,15 @@ Widget loadingWidget({double height, double width}) {
     ),
   );
 }
+
+Widget loading({double height, double width}) {
+  return Container(
+    height: height,
+    width: width,
+    child: Center(
+        child: CircularProgressIndicator(
+          valueColor: AlwaysStoppedAnimation<Color>(Colors.red),
+        ),
+    ),
+  );
+}

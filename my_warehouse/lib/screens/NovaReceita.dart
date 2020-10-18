@@ -59,6 +59,7 @@ class _NovaReceitaState extends State<NovaReceita> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      resizeToAvoidBottomInset: false,
         body: Padding(
           padding: EdgeInsets.only(top: 10.0, right: 5.0, left: 5.0),
           child: ListView(
@@ -194,17 +195,31 @@ class _NovaReceitaState extends State<NovaReceita> {
                   ),
                 ),
               ),
-              SizedBox(height: 210),
-              RaisedButton(
-                onPressed: (){
-                  List<double> qtdIngredientes;
-                  qtdControllers.forEach((element) {
-                    qtdIngredientes.add(double.parse(element.text.replaceAll(",", ".")));
-                  });
-                  createReceita(nomeController.text, double.parse(precoController.text.replaceAll(",", ".")), ingredientesLista, qtdIngredientes);
-                },
-                color: laranja,
-                child: Text("Adicionar receita")
+              SizedBox(height: 20),
+              Padding(
+                padding: EdgeInsets.all(10.0),
+                child: RaisedButton(
+                    onPressed: (){
+                      try{
+                        List<double> qtdIngredientes = new List<double>();
+                        for(int i=0;i<qtdControllers.length;i++){
+                          double quantidade = double.tryParse(qtdControllers[i].text.replaceAll(',', '.'));
+                          if(kglList[i]=='kg' || kglList[i]=='l'){
+                            quantidade = quantidade*1000;
+                          }
+                          qtdIngredientes.add(quantidade);
+                        }
+                        createReceita(nomeController.text, double.parse(precoController.text.replaceAll(",", ".")), ingredientesLista, qtdIngredientes);
+                      }
+                      catch(e){
+                        setState(() {
+
+                        });
+                      }
+                    },
+                    color: laranja,
+                    child: Text("Adicionar receita")
+                ),
               )
             ],
           ),
@@ -253,8 +268,8 @@ class _AdicionarIngredienteState extends State<AdicionarIngrediente> {
       return AlertDialog(
         title: Text("Selecione o ingrediente", style: TextStyle(fontSize: 18.0),),
         content: Container(
-          height: MediaQuery.of(context).size.height*0.8,
-          width: MediaQuery.of(context).size.width*0.7,
+          height: MediaQuery.of(context).size.height*0.7,
+          width: MediaQuery.of(context).size.width*0.6,
           child: loadingWidget(height: MediaQuery.of(context).size.height*0.5)
         ),
         actions: [

@@ -147,6 +147,15 @@ class _CozinharState extends State<Cozinhar> {
     );
   }
 
+  String _numberFormat(double number){
+    if(number%1==0){
+      return number.toInt().toString();
+    }
+    else{
+      return number.toStringAsFixed(2).replaceAll('.', ',');
+    }
+  }
+
   Widget buildPopUpReceita(Receita receita, function){
     return AlertDialog(
       title: Text("Ingredientes", style: TextStyle(fontSize: 18.0),),
@@ -168,7 +177,7 @@ class _CozinharState extends State<Cozinhar> {
                       crossAxisAlignment: CrossAxisAlignment.center,
                       children: [
                         Text(receita.nomesIngredientes[index], style: TextStyle(fontSize: 16.0),),
-                        Text(receita.quantidadesIngredientes[index].toStringAsFixed(2).replaceAll(".", ","), style: TextStyle(fontSize: 16.0),)
+                        Text(_numberFormat(receita.quantidadesIngredientes[index]), style: TextStyle(fontSize: 16.0),)
                       ],
                     ),
                   ),
@@ -241,7 +250,7 @@ class _CozinharState extends State<Cozinhar> {
           );
         }
         else{
-          return loadingWidget(height: 18.0, width: MediaQuery.of(context).size.width*0.7);
+          return loading(height: 18.0, width: MediaQuery.of(context).size.width*0.7);
         }
       },
     );
