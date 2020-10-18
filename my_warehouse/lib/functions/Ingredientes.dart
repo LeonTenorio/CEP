@@ -48,12 +48,14 @@ Future<Map<String, TipoIngrediente>> getTiposIngredientes() async{
   return ret;
 }
 
-Future<List<Ingrediente>> getListTiposIngredientes() async{
-  Map<String, dynamic> load = await getTiposIngredientes();
-  List<Ingrediente> ret = new List<Ingrediente>();
-  List<String> keys = load.keys.toList();
+Future<List<TipoIngrediente>> getListTiposIngredientes() async{
+  Map<String, dynamic> tiposIngredientes = await getTiposIngredientes();
+  List<TipoIngrediente> ret = new List<TipoIngrediente>();
+  List<String> keys = tiposIngredientes.keys.toList();
+  print(keys);
   for(int i=0;i<keys.length;i++){
-    ret.addAll(load[keys[i]]);
+    TipoIngrediente tipo = tiposIngredientes[keys[i]];
+    ret.add(tipo);
   }
   return ret;
 }

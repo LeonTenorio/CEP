@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:my_warehouse/functions/Color.dart';
+import 'package:my_warehouse/functions/Ingredientes.dart';
+import 'package:my_warehouse/models/Ingredientes.dart';
 import 'package:my_warehouse/screens/Cozinhar.dart';
 import 'package:my_warehouse/screens/Estoque.dart';
 import 'package:my_warehouse/screens/None.dart';

@@ -204,7 +204,7 @@ class AdicionarIngrediente extends StatefulWidget {
 }
 
 class _AdicionarIngredienteState extends State<AdicionarIngrediente> {
-  List<Ingrediente> ingredientes;
+  List<TipoIngrediente> ingredientes;
   Ingrediente ingrediente;
   bool isLoading = true;
 
