@@ -5,6 +5,8 @@ import 'package:my_warehouse/screens/NovaReceita.dart';
 import 'package:my_warehouse/widgets/loadingWidget.dart';
 import '../main.dart';
 
+List<int> quantidadeFeita = new List<int>();
+
 class Cozinhar extends StatefulWidget {
   @override
   _CozinharState createState() => _CozinharState();
@@ -13,7 +15,7 @@ class Cozinhar extends StatefulWidget {
 class _CozinharState extends State<Cozinhar> {
   bool isLoading = true;
   List<Receita> receitas = new List<Receita>();
-  List<int> quantidadeFeita = new List<int>();
+
 
   @override
   void initState() {
@@ -39,16 +41,16 @@ class _CozinharState extends State<Cozinhar> {
   load() async{
     this.receitas = await getReceitas();
     List<Receita> receitasFeitas = await getReceitasFeitas();
-    this.quantidadeFeita = new List<int>();
+    quantidadeFeita = new List<int>();
     for(int i=0;i<receitas.length;i++){
-      this.quantidadeFeita.add(_getQuantidadeFeita(nomeReceita: receitas[i].nome, receitasFeitas: receitasFeitas));
+      quantidadeFeita.add(_getQuantidadeFeita(nomeReceita: receitas[i].nome, receitasFeitas: receitasFeitas));
     }
     setState(() {
       this.isLoading = false;
     });
   }
 
-  AlertDialog venderReceitaWidget({Receita receita, int quantidade}){
+  AlertDialog venderReceitaWidget({Receita receita, int index}){
     TextEditingController precoVenda = new TextEditingController();
     return AlertDialog(
       title: Text("Vender receita", style: TextStyle(fontSize: 18.0),),
@@ -102,7 +104,7 @@ class _CozinharState extends State<Cozinhar> {
           color: laranja,
           onPressed: (){
             excluirReceitaFeita(receita: receita);
-            quantidade--;
+            quantidadeFeita[index]--;
             Navigator.pop(context);
             setState(() {
               
@@ -117,7 +119,7 @@ class _CozinharState extends State<Cozinhar> {
               try{
                 double preco = double.tryParse(precoVenda.text);
                 venderReceita(receita: receita, preco: preco);
-                quantidade--;
+                quantidadeFeita[index]--;
                 Navigator.pop(context);
                 setState(() {
 
@@ -214,7 +216,7 @@ class _CozinharState extends State<Cozinhar> {
     );
   }
   
-  Widget _buildViewReceita(Receita receita, int quantidadeFeita){
+  Widget _buildViewReceita(Receita receita, int index){
     return Card(
       child: Padding(
         padding: EdgeInsets.all(5.0),
@@ -223,12 +225,12 @@ class _CozinharState extends State<Cozinhar> {
           crossAxisAlignment: CrossAxisAlignment.center,
           children: [
             Text(receita.nome, style: TextStyle(fontSize: 18.0),),
-            buildIconWithNumberAndFunction(icon: Icon(Icons.assignment_turned_in), number: quantidadeFeita, function: () {
-              if(quantidadeFeita>0){
+            buildIconWithNumberAndFunction(icon: Icon(Icons.assignment_turned_in), number: quantidadeFeita[index], function: () {
+              if(quantidadeFeita[index]>0){
                 showDialog(
                     context: context,
                     builder: (BuildContext context){
-                      return venderReceitaWidget(receita: receita, quantidade: quantidadeFeita);
+                      return venderReceitaWidget(receita: receita, index: index);
                     }
                 );
               }
@@ -239,7 +241,7 @@ class _CozinharState extends State<Cozinhar> {
     );
   }
 
-  Widget buildReceita({Receita receita, int quantidadeFeita}){
+  Widget buildReceita({Receita receita, int index}){
     return FutureBuilder(
       future: checkEstoqueReceita(receita: receita),
       builder: (context, snapshot){
@@ -247,7 +249,7 @@ class _CozinharState extends State<Cozinhar> {
           int quantidadePossoFazer = snapshot.data;
           if(quantidadePossoFazer>0){
             return GestureDetector(
-              child: _buildViewReceita(receita, quantidadeFeita),
+              child: _buildViewReceita(receita, index),
               onTap: () async{
                 await showDialog(
                     context: context,
@@ -257,7 +259,7 @@ class _CozinharState extends State<Cozinhar> {
                           fazerReceita(receita: receita);
                           Navigator.pop(context);
                           setState(() {
-                            quantidadeFeita++;
+                            quantidadeFeita[index]++;
                           });
                         }
                       });
@@ -267,7 +269,7 @@ class _CozinharState extends State<Cozinhar> {
             );
           }
           else{
-            return _buildViewReceita(receita, quantidadeFeita);
+            return _buildViewReceita(receita, index);
           }
         }
         else{
@@ -311,7 +313,7 @@ class _CozinharState extends State<Cozinhar> {
                             //Nao me critiquem por async, mas isso que vou colocar aqui eh muito util
                             //Maneira mais simples da pagina de nova receita criar essa receita e depois de criar adicionar na lista de receitas
                             //Ai essa pagina espera a pagina chamada terminar a execucao e depois da um setState com essa nova receita na listagem
-                            await Navigator.push(context, MaterialPageRoute(builder: (context) => NovaReceita(receitas: this.receitas, quantidadeFeita: this.quantidadeFeita,)));
+                            await Navigator.push(context, MaterialPageRoute(builder: (context) => NovaReceita(receitas: this.receitas,)));
                             setState(() {
 
                             });
@@ -337,7 +339,7 @@ class _CozinharState extends State<Cozinhar> {
                           itemBuilder: (BuildContext context, int index){
                             return buildReceita(
                               receita: this.receitas[index],
-                              quantidadeFeita: this.quantidadeFeita[index],
+                              index: index,
                             );
                           },
                         )

@@ -4,6 +4,7 @@ import 'package:my_warehouse/functions/Ingredientes.dart';
 import 'package:my_warehouse/functions/Receitas.dart';
 import 'package:my_warehouse/models/Ingredientes.dart';
 import 'package:my_warehouse/models/Receitas.dart';
+import 'package:my_warehouse/screens/Cozinhar.dart';
 import 'package:my_warehouse/widgets/loadingWidget.dart';
 import '../functions/Ingredientes.dart';
 import '../functions/Ingredientes.dart';
@@ -15,8 +16,7 @@ import '../models/Ingredientes.dart';
 
 class NovaReceita extends StatefulWidget {
   List<Receita> receitas;
-  List<int> quantidadeFeita;
-  NovaReceita({this.receitas, this.quantidadeFeita});
+  NovaReceita({this.receitas});
 
   @override
   _NovaReceitaState createState() => _NovaReceitaState();
@@ -42,7 +42,7 @@ class _NovaReceitaState extends State<NovaReceita> {
     );
     if(!this.widget.receitas.contains(receita.nome)){
       this.widget.receitas.add(receita);
-      this.widget.quantidadeFeita.add(0);
+      quantidadeFeita.add(0);
     }
     addNovaReceita(receita: receita);
     Navigator.pop(context);
