@@ -117,7 +117,8 @@ class _CozinharState extends State<Cozinhar> {
           onPressed: (){
             if(precoVenda.text.length>0){
               try{
-                double preco = double.tryParse(precoVenda.text);
+                double preco = double.tryParse(precoVenda.text.replaceAll(",", "."));
+                print(preco);
                 venderReceita(receita: receita, preco: preco);
                 quantidadeFeita[index]--;
                 Navigator.pop(context);

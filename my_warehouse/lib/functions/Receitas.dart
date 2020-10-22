@@ -35,12 +35,12 @@ Future<List<Receita>> getReceitasFeitas() async{
   return await _getReceitas(docName: nomeArquivoReceitasFeitas);
 }
 
-Future<Map<String, dynamic>> getReceitasVendidas() async{
-  Map<String, dynamic> ret = new Map<String, dynamic>();
+Future<Map<String, List<Receita>>> getReceitasVendidas() async{
+  Map<String, List<Receita>> ret = new Map<String, List<Receita>>();
   List<Receita> receitasVendidas =  await _getReceitas(docName: nomeArquivoReceitasVendidas);
   for(int i=0;i<receitasVendidas.length;i++){
     if(!ret.containsKey(receitasVendidas[i].nome)){
-      ret[receitasVendidas[i].nome] = new List<dynamic>();
+      ret[receitasVendidas[i].nome] = new List<Receita>();
     }
     ret[receitasVendidas[i].nome].add(receitasVendidas[i]);
   }
@@ -147,9 +147,11 @@ Future<bool> venderReceita({Receita receita, double preco}) async{
     receita = Receita.fromJson(reloadFeitos[receita.horarioFeito]);
     reloadFeitos[receita.horarioFeito] = null;
     reloadFeitos.remove(receita.horarioFeito);
-    receita.percentualLucro = preco;
+    receita.precoComercializado = preco;
     receita.horarioComercializado = DateTime.now().toString();
     reloadVendidos[receita.horarioComercializado] = receita.toJson();
+    print('adicao');
+    print(receita.toJson());
     await saveDocument(docName: nomeArquivoReceitasVendidas, map: reloadVendidos);
     await saveDocument(docName: nomeArquivoReceitasFeitas, map: reloadFeitos);
     return true;
