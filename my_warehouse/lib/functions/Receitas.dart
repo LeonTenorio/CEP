@@ -100,23 +100,17 @@ Future<List<dynamic>> fazerReceita({Receita receita}) async{//Desculpem, vai ret
   List<String> nomesIngredientes = receita.nomesIngredientes;
   List<double> quantidadeIngredientes = receita.quantidadesIngredientes;
   for(int i=0;i<nomesIngredientes.length;i++){
-    try{
-      List<Ingrediente> ingredientesConsumidos = await consumirIngrediente(tipo: nomesIngredientes[i], quantidade: quantidadeIngredientes[i]);
-      if(ingredientesConsumidos==null){
-        return [false, "Está faltando ingredientes no estoque"];
-      }
-      else{
-        if(!ingredientesUsados.containsKey(nomesIngredientes[i])){
-          ingredientesUsados[nomesIngredientes[i]] = new List<dynamic>();
-        }
-        for(int j=0;j<ingredientesConsumidos.length;j++){
-          ingredientesUsados[nomesIngredientes[i]].add(ingredientesConsumidos[j].toJson());
-        }
-      }
+    List<Ingrediente> ingredientesConsumidos = await consumirIngrediente(tipo: nomesIngredientes[i], quantidade: quantidadeIngredientes[i]);
+    if(ingredientesConsumidos==null){
+      return [false, "Está faltando ingredientes no estoque"];
     }
-    catch(e){
-      print(e);
-      return [false, e.toString()];
+    else{
+      if(!ingredientesUsados.containsKey(nomesIngredientes[i])){
+        ingredientesUsados[nomesIngredientes[i]] = new List<dynamic>();
+      }
+      for(int j=0;j<ingredientesConsumidos.length;j++){
+        ingredientesUsados[nomesIngredientes[i]].add(ingredientesConsumidos[j].toJson());
+      }
     }
   }
   receita.horarioFeito = DateTime.now().toString();

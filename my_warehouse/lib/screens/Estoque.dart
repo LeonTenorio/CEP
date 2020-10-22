@@ -100,7 +100,10 @@ class _EstoqueState extends State<Estoque> {
                   GestureDetector(
                     child: Icon(Icons.add, color: Colors.white, size: 25.0,),
                     onTap: () async{
-                      await Navigator.push(context, MaterialPageRoute(builder: (context) => AdicaoNoEstoque(name: tipo,)));
+                      if(this.estoque==null){
+                        this.estoque = new Map<String, dynamic>();
+                      }
+                      await Navigator.push(context, MaterialPageRoute(builder: (context) => AdicaoNoEstoque(name: tipo, estoque: estoque,)));
                       setState(() {
 
                       });

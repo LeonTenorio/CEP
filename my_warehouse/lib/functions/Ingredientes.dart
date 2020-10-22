@@ -221,7 +221,7 @@ Future<List<Ingrediente>> consumirIngrediente({String tipo, double quantidade}) 
       else{
         double fracaoPeso = ingrediente.preco/ingrediente.pesoIngrediente;
         ingrediente.pesoIngrediente = quantidade - soma;
-        ingrediente.preco = fracaoPeso*ingrediente.quantidade;
+        ingrediente.preco = fracaoPeso*ingrediente.pesoIngrediente;
         estoque[tipo][ingrediente.id]['peso_ingrediente'] = estoque[tipo][ingrediente.id]['peso_ingrediente'] - ingrediente.pesoIngrediente;
         estoque[tipo][ingrediente.id]['preco'] = fracaoPeso*estoque[tipo][ingrediente.id]['peso_ingrediente'];
       }

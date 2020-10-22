@@ -200,7 +200,7 @@ class _AdicaoNoEstoqueState extends State<AdicaoNoEstoque> {
                       ehVolume = false;
                       peso = 1000*double.parse(qtdController.text.replaceAll(',', '.'));
                     }
-                    if(kgL == "g"){
+                    else if(kgL == "g"){
                       ehPeso = true;
                       ehVolume = false;
                       peso = double.parse(qtdController.text.replaceAll(',', '.'));
