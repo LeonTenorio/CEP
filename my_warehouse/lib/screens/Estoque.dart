@@ -175,26 +175,22 @@ class _EstoqueState extends State<Estoque> {
                     ),
                   ),
                 ),
+                SizedBox(height: 10.0,),
                 Card(
+                  color: Colors.black,
                   child: Padding(
-                    padding: EdgeInsets.all(15.0),
-                    child: ListView(
-                      physics: NeverScrollableScrollPhysics(),
-                      shrinkWrap: true,
-                      children: [
-                        Text("Veja seu estoque", style: TextStyle(fontSize: 16.0), textAlign: TextAlign.center,),
-                        SizedBox(height: 10.0,),
-                        ListView.builder(
-                          shrinkWrap: true,
-                          physics: NeverScrollableScrollPhysics(),
-                          itemCount: this.estoque.keys.toList().length,
-                          itemBuilder: (BuildContext context, int index){
-                            return buildIngredienteEstoque(this.estoque.keys.toList()[index],this.estoque[this.estoque.keys.toList()[index]]);
-                          },
-                        )
-                      ],
-                    ),
+                    padding: EdgeInsets.only(left: 15.0, right: 15.0, top: 10.0, bottom: 10.0),
+                    child: Text("Veja seu estoque", style: TextStyle(fontSize: 18.0, color: Colors.white), textAlign: TextAlign.center,),
                   ),
+                ),
+                SizedBox(height: 10.0,),
+                ListView.builder(
+                  shrinkWrap: true,
+                  physics: NeverScrollableScrollPhysics(),
+                  itemCount: this.estoque.keys.toList().length,
+                  itemBuilder: (BuildContext context, int index){
+                    return buildIngredienteEstoque(this.estoque.keys.toList()[index],this.estoque[this.estoque.keys.toList()[index]]);
+                  },
                 )
               ],
             ),

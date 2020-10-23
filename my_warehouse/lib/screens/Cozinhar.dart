@@ -145,7 +145,7 @@ class _CozinharState extends State<Cozinhar> {
           Center(
             child: IconButton(
               icon: icon,
-              iconSize: 25.0,
+              iconSize: 22.0,
               color: laranja,
               onPressed: function,
             ),
@@ -154,7 +154,7 @@ class _CozinharState extends State<Cozinhar> {
             alignment: Alignment.topRight,
             child: Padding(
               padding: EdgeInsets.only(top: 5.0, right: 5.0),
-              child: Text(number.toString(), style: TextStyle(fontSize: 10.0, color: Colors.blue),),
+              child: Text(number.toString(), style: TextStyle(fontSize: 12.0, color: Colors.blue, fontWeight: FontWeight.bold),),
             ),
           )
         ],
@@ -324,29 +324,25 @@ class _CozinharState extends State<Cozinhar> {
                     ),
                   ),
                 ),
+                SizedBox(height: 10.0,),
                 Card(
+                  color: Colors.black,
                   child: Padding(
-                    padding: EdgeInsets.all(15.0),
-                    child: ListView(
-                      physics: NeverScrollableScrollPhysics(),
-                      shrinkWrap: true,
-                      children: [
-                        Text("Veja suas receitas", style: TextStyle(fontSize: 16.0), textAlign: TextAlign.center,),
-                        SizedBox(height: 10.0,),
-                        ListView.builder(
-                          shrinkWrap: true,
-                          physics: NeverScrollableScrollPhysics(),
-                          itemCount: this.receitas.length,
-                          itemBuilder: (BuildContext context, int index){
-                            return buildReceita(
-                              receita: this.receitas[index],
-                              index: index,
-                            );
-                          },
-                        )
-                      ],
-                    ),
+                    padding: EdgeInsets.only(left: 15.0, right: 15.0, top: 10.0, bottom: 10.0),
+                    child: Text("Veja suas receitas", style: TextStyle(fontSize: 18.0, color: Colors.white), textAlign: TextAlign.center,),
                   ),
+                ),
+                SizedBox(height: 10.0,),
+                ListView.builder(
+                  shrinkWrap: true,
+                  physics: NeverScrollableScrollPhysics(),
+                  itemCount: this.receitas.length,
+                  itemBuilder: (BuildContext context, int index){
+                    return buildReceita(
+                      receita: this.receitas[index],
+                      index: index,
+                    );
+                  },
                 )
               ],
             ),
