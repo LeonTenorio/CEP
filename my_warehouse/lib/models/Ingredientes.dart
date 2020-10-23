@@ -40,6 +40,7 @@ class Ingrediente {
   double pesoIngrediente;
   bool ehVolume;
   double volumeIngrediente;
+  int quantidade;
   double preco;
   String horarioAdicionado;
   String horarioUsado;
@@ -55,6 +56,7 @@ class Ingrediente {
         this.preco,
         this.horarioAdicionado,
         this.horarioUsado,
+        this.quantidade,
         this.validade,
         this.marca}){
     this.id = DateTime.now().toString();
@@ -72,6 +74,9 @@ class Ingrediente {
     horarioUsado = json['horario_usado'];
     validade = json['validade'];
     marca = json['marca'];
+    if(json.containsKey('quantidade')){
+      quantidade = json['quantidade'];
+    }
   }
 
   Map<String, dynamic> toJson() {
@@ -87,6 +92,7 @@ class Ingrediente {
     data['horario_usado'] = this.horarioUsado;
     data['validade'] = this.validade;
     data['marca'] = this.marca;
+    data['quantidade'] = this.quantidade;
     return data;
   }
 }
